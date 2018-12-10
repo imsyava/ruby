@@ -1,16 +1,19 @@
 print "Enter a: "
-a = Integer(gets.chomp)
+a = gets.chomp.to_f
 print "Enter b: "
-b = Integer(gets.chomp)
+b = gets.chomp.to_f
 print "Enter c: "
-c = Integer(gets.chomp)
+c = gets.chomp.to_f
 
 d = b**2 - 4*a*c
 
 if d < 0
-	puts "Корней нет, потому что D = #{d}"
+  puts "Корней нет, потому что D = #{d}"
 elsif d == 0
-	puts "x = #{-b/(2*a)}, D = #{d}"
+  x = -b/(2*a)
+  puts "x = #{x}, D = #{d}"
 else
-	puts "x1 = #{(Math.sqrt(d)-b)/(2*a)}, x2 = #{(-Math.sqrt(d)-b)/(2*a)}, D = #{d}"
+  x1 = (Math.sqrt(d)-b)/(2*a)
+  x2 = (-Math.sqrt(d)-b)/(2*a)
+  puts "x1 = #{x1}, x2 = #{x2}, D = #{d}"
 end

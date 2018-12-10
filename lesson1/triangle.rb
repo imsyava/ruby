@@ -1,5 +1,5 @@
 print "Enter the hight of triangle: "
-h = Integer(gets.chomp)
+h = gets.chomp.to_f
 print "Enter the basis of that hight: "
-a = Integer(gets.chomp)
+a = gets.chomp.to_f
 puts "S = #{a*h/2}"
