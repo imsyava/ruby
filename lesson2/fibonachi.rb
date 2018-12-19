@@ -1,9 +1,7 @@
 arr = [1, 1]
-i = 0
 
-while arr[i] + arr[i + 1] < 100
-  arr.push(arr[i] + arr[i + 1])
-  i += 1
+while arr[-1] + arr[-2] < 100
+  arr << arr[-1] + arr[-2]
 end
 
 print arr

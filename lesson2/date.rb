@@ -13,7 +13,7 @@ check_d = true
 check_m = true
 leap_year = false
 
-if (1..12).any? { |i| i == m }
+if m > 0 && m <= 12
   check_m = true
 else
   check_m = false
@@ -24,10 +24,10 @@ if (y % 4 == 0 && (y % 100 != 0 || y % 400 == 0))
   leap_year = true
 end
 
-if m == 2 && leap_year && (1..29).any? { |i| i == d }
+if m == 2 && leap_year && d == 29
   check_d = true
 elsif check_m
-  if (1..months[m]).any? { |i| i == d }
+  if d > 0 && d <= months[m]
     check_d = true
   else
     check_d = false

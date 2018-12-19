@@ -2,7 +2,7 @@ arr = []
 i = 10
 
 while i <= 100
-  arr.push(i)
+  arr << i
   i += 5
 end
 
