@@ -1,6 +1,7 @@
 class Station
-  def initialization(name)
-    @name = name
+  def initialize(names)
+    @name = names
+    @current_trains = []
   end
 
   def take(train)
@@ -12,9 +13,9 @@ class Station
     end
   end
 
-  def current_trains; @current_trains; end
-  def current_cargo_trains; @current_cargo_trains; end
-  def current_passenger_trains; @current_passenger_trains; end
+  attr_reader :current_trains
+  attr_reader :current_passenger_trains
+  attr_reader :current_cargo_trains
 
   def send
     if @current_trains[-1].type == "cargo"
@@ -30,7 +31,7 @@ end
 
 
 class Train
-  def initialization(number, type = "cargo", number_of_wagons = 0)
+  def initialize(number, type = "cargo", number_of_wagons = 0)
     @number = number
     if type != "cargo"
       @type = "passenger"
@@ -38,11 +39,12 @@ class Train
       @type = "cargo"
     end
     @number_of_wagons = number_of_wagons
+    @speed = 0
   end
 
-  def type; @type; end
+  attr_reader :type
+  attr_reader :speed
 
-  def speed; @speed; end
   def speed_up(count)
     @speed += count
   end
@@ -99,7 +101,7 @@ end
 
 
 class Route
-  def initialization(first, last)
+  def initialize(first, last)
     @first = first
     @last = last
     @middle_stations = Array.new
