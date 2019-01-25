@@ -2,7 +2,11 @@ class Station
   def initialize(names)
     @name = names
     @current_trains = []
+    @current_cargo_trains = []
+    @current_passenger_trains = []
   end
+
+  attr_reader :name
 
   def take(train)
     @current_trains << train
@@ -17,83 +21,13 @@ class Station
   attr_reader :current_passenger_trains
   attr_reader :current_cargo_trains
 
-  def send
-    if @current_trains[-1].type == "cargo"
-      @current_cargo_trains[-1].delete
-      @current_trains[-1].delete
+  def send(train)
+    if train.type == "cargo"
+      @current_cargo_trains.delete(train)
+      @current_trains.delete(train)
     else
-      @current_passenger_trains[-1].delete
-      @current_trains[-1].delete
-    end
-  end
-end
-
-
-
-class Train
-  def initialize(number, type = "cargo", number_of_wagons = 0)
-    @number = number
-    if type != "cargo"
-      @type = "passenger"
-    else
-      @type = "cargo"
-    end
-    @number_of_wagons = number_of_wagons
-    @speed = 0
-  end
-
-  attr_reader :type
-  attr_reader :speed
-
-  def speed_up(count)
-    @speed += count
-  end
-  def stop
-    @speed = 0
-  end
-
-  def number_of_wagons; @number_of_wagons; end
-  def wagon_plus
-    if @speed == 0
-      @number_of_wagons += 1
-    else
-      puts "Нельзя прицеплять вагоны на ходу!"
-    end
-  end
-  def wagon_minus
-    if @speed == 0
-      @number_of_wagons -= 1
-    elsif @number_of_wagons == 0
-      puts "Нечего отцеплять"
-    else
-      puts "Нельзя отцеплять вагоны на ходу!"
-    end
-  end
-
-  def take_route(route)
-    @current_route = route
-    @current_station = route.first
-  end
-
-  def station_current; @current_station; end
-
-  def station_next
-    if @current_route.last == @current_station
-      puts "Поезд уже достиг конечной станции"
-    elsif @current_route == nil
-      puts "Поезду ещё не назначен маршрут"
-    else
-      @current_route.next(@current_station)
-    end
-  end
-
-  def station_prev
-    if @current_route.first == @current_station
-      puts "Поезд находится на начальной станции"
-    elsif @current_route == nil
-      puts "Поезду ещё не назначен маршрут"
-    else
-      @current_route.prev(@current_station)
+      @current_passenger_trains.delete(train)
+      @current_trains.delete(train)
     end
   end
 end
@@ -106,6 +40,9 @@ class Route
     @last = last
     @middle_stations = Array.new
   end
+
+  attr_reader :first
+  attr_reader :last
 
   def add_station(station)
     @middle_stations << station
@@ -149,5 +86,92 @@ class Route
         end
       end
     end
+  end
+
+  def list
+    print @first.name, " -> "
+    @middle_stations.each do |st|
+      print st.name, " -> "
+    end
+    puts @last.name
+  end
+end
+
+
+
+class Train
+  def initialize(number, type = "cargo", number_of_wagons = 0)
+    @number = number
+    if type != "cargo"
+      @type = "passenger"
+    else
+      @type = "cargo"
+    end
+    @number_of_wagons = number_of_wagons.to_i
+    @speed = 0
+  end
+
+  attr_reader :type
+  attr_reader :speed
+
+  def speed_up(count)
+    @speed += count
+  end
+  def stop
+    @speed = 0
+  end
+
+  def number_of_wagons; @number_of_wagons; end
+  def wagon_plus
+    if @speed == 0
+      @number_of_wagons += 1
+    else
+      puts "Нельзя прицеплять вагоны на ходу!"
+    end
+  end
+  def wagon_minus
+    if @number_of_wagons == 0
+      puts "Нечего отцеплять"
+    elsif @speed == 0
+      @number_of_wagons -= 1
+    else
+      puts "Нельзя отцеплять вагоны на ходу!"
+    end
+  end
+
+  def take_route(route)
+    @current_route = route
+    @current_station = route.first
+  end
+
+  def station_current; @current_station; end
+
+  def station_next
+    if @current_route.last == @current_station
+      puts "Поезд уже достиг конечной станции"
+    elsif @current_route == nil
+      puts "Поезду ещё не назначен маршрут"
+    else
+      @current_route.next(@current_station).name
+    end
+  end
+
+  def station_prev
+    if @current_route.first == @current_station
+      puts "Поезд находится на начальной станции"
+    elsif @current_route == nil
+      puts "Поезду ещё не назначен маршрут"
+    else
+      @current_route.prev(@current_station).name
+    end
+  end
+
+  def info
+    puts "Номер поезда: #{@number}"
+    puts "Тип поезда: #{@type}"
+    puts "Текущая скорость #{@speed}"
+    puts "Сейчас вагонов: #{@number_of_wagons}"
+    puts "Текущий маршрут: #{@current_route.first.name} -> #{@current_route.last.name}"
+    puts "Текущая станция: #{@current_station.name}"
   end
 end
