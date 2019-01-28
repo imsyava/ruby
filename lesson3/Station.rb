@@ -38,62 +38,42 @@ class Route
   def initialize(first, last)
     @first = first
     @last = last
-    @middle_stations = Array.new
+    @stations = Array.new
+    @stations << @first << @last
   end
 
   attr_reader :first
   attr_reader :last
 
   def add_station(station)
-    @middle_stations << station
+    @stations.insert(-2, station)
   end
 
   def delete_station(station)
-    @middle_stations.delete(station)
+    @stations.delete(station)
   end
 
   def next(station)
-    if station == @first && @middle_stations.length == 0
-      return @last
-    elsif station == @first
-      return @middle_stations.first
-    else
-      @middle_stations.each_with_index do |stat, index|
-        if stat == station
-          if index == @middle_stations.length - 1
-            return @last
-          else
-            return @middle_stations[index + 1]
-          end
-        end
+    @stations.each_with_index do |stat, index|
+      if stat == station
+        return @stations[index + 1]
       end
     end
   end
 
   def prev(station)
-    if station == @last && @middle_stations.length == 0
-      return @first
-    elsif station == @last
-      return @middle_stations.last
-    else
-      @middle_stations.each_with_index do |stat, index|
-        if stat == station
-          if index == 0
-            return @first
-          else
-            return @middle_stations[index - 1]
-          end
-        end
+    @stations.each_with_index do |stat, index|
+      if stat == station
+        return @stations[index - 1]
       end
     end
   end
 
   def list
-    print @first.name, " -> "
-    @middle_stations.each do |st|
-      print st.name, " -> "
+    @stations.each do |st|
+      print " -> ", st.name
     end
-    puts @last.name
+    puts
   end
 end
 
@@ -165,6 +145,21 @@ class Train
       @current_route.prev(@current_station).name
     end
   end
+
+  def move
+    if @current_route.last == @current_station
+      puts "Поезд находится на конечной станции"
+    elsif @current_route == nil
+      puts "Поезду ещё не назначен маршрут"
+    else 
+      self.speed_up(100)
+      @current_station.send(self)
+      @current_station = @current_route.next(@current_station)
+      @current_station.take(self)
+      self.stop
+    end
+  end
+
 
   def info
     puts "Номер поезда: #{@number}"
