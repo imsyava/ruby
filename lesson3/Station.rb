@@ -122,6 +122,7 @@ class Train
   def take_route(route)
     @current_route = route
     @current_station = route.first
+    @current_station.take(self)
   end
 
   def station_current; @current_station; end
@@ -162,11 +163,14 @@ class Train
 
 
   def info
+    puts "----------"
     puts "Номер поезда: #{@number}"
     puts "Тип поезда: #{@type}"
     puts "Текущая скорость #{@speed}"
     puts "Сейчас вагонов: #{@number_of_wagons}"
-    puts "Текущий маршрут: #{@current_route.first.name} -> #{@current_route.last.name}"
+    print "Текущий маршрут: "
+    @current_route.list
     puts "Текущая станция: #{@current_station.name}"
+    puts "----------"
   end
 end

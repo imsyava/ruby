@@ -37,9 +37,10 @@ train.info
 route.delete_station(st4)
 route.list
 
-print st1.current_trains, " "
-st1.take(train)
-print st1.current_trains, " "
+#print st1.current_trains, " "
+#st1.take(train)
+#print st1.current_trains, " "
 #print st1.current_cargo_trains, " ", st1.current_passenger_trains, " "
-st1.send(train)
+train.move
+train.info
 #print st1.current_trains, " ", st1.current_cargo_trains, " ", st1.current_passenger_trains, " "
