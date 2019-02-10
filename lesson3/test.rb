@@ -12,7 +12,7 @@ route.add_station(st5)
 train = Train.new("first_train", "passenger", "1")
 train.take_route(route)
 
-puts train.station_current, train.number_of_wagons
+puts train.current_station.name, train.number_of_wagons
 route.list
 puts train.station_prev
 puts train.station_next
@@ -34,13 +34,22 @@ puts train.speed
 
 train.info
 
+train.move_forward
+train.move_forward
 route.delete_station(st4)
 route.list
+train.info
 
 #print st1.current_trains, " "
-#st1.take(train)
+#st1.take_train(train)
 #print st1.current_trains, " "
 #print st1.current_cargo_trains, " ", st1.current_passenger_trains, " "
-train.move
+train.move_forward
+train.info
+train.move_forward
+train.info
+train.move_forward
+train.info
+train.move_forward
 train.info
 #print st1.current_trains, " ", st1.current_cargo_trains, " ", st1.current_passenger_trains, " "

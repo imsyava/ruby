@@ -8,7 +8,7 @@ class Station
 
   attr_reader :name
 
-  def take(train)
+  def take_train(train)
     @current_trains << train
     if train.type == "cargo"
       @current_cargo_trains << train
@@ -21,7 +21,7 @@ class Station
   attr_reader :current_passenger_trains
   attr_reader :current_cargo_trains
 
-  def send(train)
+  def send_train(train)
     if train.type == "cargo"
       @current_cargo_trains.delete(train)
       @current_trains.delete(train)
@@ -36,37 +36,36 @@ end
 
 class Route
   def initialize(first, last)
-    @first = first
-    @last = last
     @stations = Array.new
-    @stations << @first << @last
+    @stations << first << last
   end
 
-  attr_reader :first
-  attr_reader :last
+  def first
+    return @stations[0]
+  end
+  def last
+    return @stations[-1]
+  end
 
   def add_station(station)
     @stations.insert(-2, station)
   end
 
   def delete_station(station)
+    station.current_trains.each do |train|
+      if train.current_route == self
+        train.move_back
+      end
+    end
     @stations.delete(station)
   end
 
-  def next(station)
-    @stations.each_with_index do |stat, index|
-      if stat == station
-        return @stations[index + 1]
-      end
-    end
+  def next(station_index)
+    return @stations[station_index + 1]
   end
 
-  def prev(station)
-    @stations.each_with_index do |stat, index|
-      if stat == station
-        return @stations[index - 1]
-      end
-    end
+  def prev(station_index)
+    return @stations[station_index - 1]
   end
 
   def list
@@ -75,6 +74,7 @@ class Route
     end
     puts
   end
+  attr_reader :stations
 end
 
 
@@ -89,13 +89,14 @@ class Train
     end
     @number_of_wagons = number_of_wagons.to_i
     @speed = 0
+    @station_index = nil
   end
 
   attr_reader :type
   attr_reader :speed
 
   def speed_up(count)
-    @speed += count
+    @speed += count.to_i
   end
   def stop
     @speed = 0
@@ -121,42 +122,64 @@ class Train
 
   def take_route(route)
     @current_route = route
+    @station_index = 0
     @current_station = route.first
-    @current_station.take(self)
+    @current_station.take_train(self)
   end
 
-  def station_current; @current_station; end
+  attr_reader :current_station
+  attr_reader :current_route
 
   def station_next
-    if @current_route.last == @current_station
-      puts "Поезд уже достиг конечной станции"
-    elsif @current_route == nil
+    if @current_route == nil
       puts "Поезду ещё не назначен маршрут"
+    elsif @current_route.last == @current_station
+      puts "Поезд уже достиг конечной станции"
     else
-      @current_route.next(@current_station).name
+      @current_route.next(@station_index).name
     end
   end
 
   def station_prev
-    if @current_route.first == @current_station
-      puts "Поезд находится на начальной станции"
-    elsif @current_route == nil
+    if @current_route == nil
       puts "Поезду ещё не назначен маршрут"
+    elsif @current_route.first == @current_station
+      puts "Поезд находится на начальной станции"
     else
-      @current_route.prev(@current_station).name
+      @current_route.prev(@station_index).name
     end
   end
 
-  def move
-    if @current_route.last == @current_station
-      puts "Поезд находится на конечной станции"
-    elsif @current_route == nil
+  def move_forward
+    if @current_route == nil
       puts "Поезду ещё не назначен маршрут"
+    elsif @current_route.last == @current_station
+      puts "Поезд уже достиг конечной станции маршрута и теперь отправляется в депо"
+      @current_route = nil
+      @station_index = nil
+      @current_station.send_train(self)
+      @current_station = nil
     else 
       self.speed_up(100)
-      @current_station.send(self)
-      @current_station = @current_route.next(@current_station)
-      @current_station.take(self)
+      @current_station.send_train(self)
+      @current_station = @current_route.next(@station_index)
+      @station_index += 1
+      @current_station.take_train(self)
+      self.stop
+    end
+  end
+
+  def move_back
+    if @current_route == nil
+      puts "Поезду ещё не назначен маршрут"
+    elsif @current_route.first == current_station
+      puts "Поезд находится на начальной станции своего маршрута"
+    else
+      self.speed_up(100)
+      @current_station.send_train(self)
+      @current_station = @current_route.prev(@station_index)
+      @station_index -= 1
+      @current_station.take_train(self)
       self.stop
     end
   end
@@ -168,9 +191,17 @@ class Train
     puts "Тип поезда: #{@type}"
     puts "Текущая скорость #{@speed}"
     puts "Сейчас вагонов: #{@number_of_wagons}"
-    print "Текущий маршрут: "
-    @current_route.list
-    puts "Текущая станция: #{@current_station.name}"
+    if @current_route == nil
+      puts "Маршрут ещё не назначен"
+    else
+      print "Текущий маршрут: "
+      @current_route.list
+    end
+    if @current_station == nil
+      puts "Поезд сейчас находится в депо"
+    else
+      puts "Текущая станция: #{@current_station.name}"
+    end
     puts "----------"
   end
 end
